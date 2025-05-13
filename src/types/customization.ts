@@ -4,4 +4,6 @@ export interface CustomizationFormValues {
   weight: number;
   build: string;
   text: string;
+  textColor: string;
+  shirtColor: string;
 }

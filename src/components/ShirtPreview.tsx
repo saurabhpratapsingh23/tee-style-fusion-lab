@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { CustomizationFormValues } from '@/types/customization';
@@ -30,25 +29,25 @@ const ShirtPreview: React.FC<ShirtPreviewProps> = ({
         >
           <path 
             d="M60,40 L120,10 L180,10 L240,40 L270,90 L250,95 L260,180 L260,330 L40,330 L40,180 L50,95 L30,90 Z" 
-            fill="#ffffff" 
+            fill={formData.shirtColor || "#ffffff"} 
             stroke="#000000" 
             strokeWidth="2"
           />
           <path 
             d="M120,10 L180,10 L170,50 L130,50 Z" 
-            fill="#ffffff" 
+            fill={formData.shirtColor || "#ffffff"} 
             stroke="#000000" 
             strokeWidth="1"
           />
           <path 
             d="M30,90 L5,60 L35,20 L60,40 L50,95" 
-            fill="#ffffff" 
+            fill={formData.shirtColor || "#ffffff"} 
             stroke="#000000" 
             strokeWidth="2"
           />
           <path 
             d="M270,90 L295,60 L265,20 L240,40 L250,95" 
-            fill="#ffffff" 
+            fill={formData.shirtColor || "#ffffff"} 
             stroke="#000000" 
             strokeWidth="2"
           />
@@ -71,7 +70,11 @@ const ShirtPreview: React.FC<ShirtPreviewProps> = ({
         {textLines.length > 0 && (
           <div className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 text-center w-3/4">
             {textLines.map((line, index) => (
-              <div key={index} className="text-sm md:text-base font-bold my-1">
+              <div 
+                key={index} 
+                className="text-sm md:text-base font-bold my-1"
+                style={{ color: formData.textColor || '#000000' }}
+              >
                 {line}
               </div>
             ))}

@@ -1,6 +1,9 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, useTexture } from '@react-three/drei';
 import { CustomizationFormValues } from '@/types/customization';
+import * as THREE from 'three';
 
 interface ThreeDShirtPreviewProps {
   formData: CustomizationFormValues;
@@ -8,129 +11,134 @@ interface ThreeDShirtPreviewProps {
   className?: string;
 }
 
-// This is a simple mock 3D preview that simulates what would be implemented with Three.js
+const TShirtModel: React.FC<{
+  formData: CustomizationFormValues;
+  previewImage: string | null;
+}> = ({ formData, previewImage }) => {
+  const mesh = useRef<THREE.Mesh>(null);
+  const shirtColor = formData.shirtColor || '#ffffff';
+  
+  // Create a canvas for drawing text
+  const createTextCanvas = () => {
+    if (!formData.text) return null;
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    
+    ctx.fillStyle = 'rgba(255, 255, 255, 0)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.font = '36px Arial';
+    ctx.fillStyle = formData.textColor || '#000000';
+    ctx.textAlign = 'center';
+    
+    const textLines = formData.text.split('\n').slice(0, 3);
+    textLines.forEach((line, index) => {
+      ctx.fillText(line, canvas.width / 2, canvas.height / 2 + (index - 1) * 40);
+    });
+    
+    return canvas;
+  };
+  
+  // Create a texture for the text
+  const textCanvas = createTextCanvas();
+  const textTexture = textCanvas ? new THREE.CanvasTexture(textCanvas) : null;
+  
+  // Use uploaded image if available
+  let designTexture = null;
+  
+  if (previewImage) {
+    const img = new Image();
+    img.src = previewImage;
+    const texture = new THREE.Texture(img);
+    img.onload = () => {
+      texture.needsUpdate = true;
+    };
+    designTexture = texture;
+  }
+  
+  // Animation
+  useFrame(() => {
+    if (!mesh.current) return;
+  });
+  
+  return (
+    <group>
+      {/* T-shirt body */}
+      <mesh ref={mesh} castShadow receiveShadow>
+        <cylinderGeometry args={[1.2, 1.5, 3, 32, 1, true]} />
+        <meshStandardMaterial 
+          color={shirtColor}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      
+      {/* T-shirt front (for design) */}
+      <mesh position={[0, 0, -1.15]}>
+        <planeGeometry args={[2, 2]} />
+        <meshStandardMaterial 
+          transparent
+          color={shirtColor}
+        >
+          {designTexture && <primitive attach="map" object={designTexture} />}
+        </meshStandardMaterial>
+      </mesh>
+      
+      {/* T-shirt front (for text) */}
+      {textTexture && (
+        <mesh position={[0, -0.5, -1.16]}>
+          <planeGeometry args={[2, 1]} />
+          <meshStandardMaterial 
+            transparent
+            map={textTexture}
+          />
+        </mesh>
+      )}
+      
+      {/* Sleeves */}
+      <mesh position={[-1.1, 0.7, 0]} rotation={[0, 0, Math.PI / 4]}>
+        <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
+        <meshStandardMaterial color={shirtColor} />
+      </mesh>
+      
+      <mesh position={[1.1, 0.7, 0]} rotation={[0, 0, -Math.PI / 4]}>
+        <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
+        <meshStandardMaterial color={shirtColor} />
+      </mesh>
+      
+      {/* Collar */}
+      <mesh position={[0, 1.3, 0]}>
+        <torusGeometry args={[0.3, 0.1, 16, 32, Math.PI]} />
+        <meshStandardMaterial color={shirtColor} />
+      </mesh>
+    </group>
+  );
+};
+
 const ThreeDShirtPreview: React.FC<ThreeDShirtPreviewProps> = ({ 
   formData, 
   previewImage, 
   className 
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw a rotating 3D-like t-shirt (simplified for this demo)
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    
-    // Draw t-shirt shape
-    ctx.beginPath();
-    ctx.moveTo(centerX - 50, centerY - 70);
-    ctx.lineTo(centerX - 70, centerY - 40);
-    ctx.lineTo(centerX - 60, centerY + 70);
-    ctx.lineTo(centerX + 60, centerY + 70);
-    ctx.lineTo(centerX + 70, centerY - 40);
-    ctx.lineTo(centerX + 50, centerY - 70);
-    ctx.lineTo(centerX + 30, centerY - 90);
-    ctx.lineTo(centerX - 30, centerY - 90);
-    ctx.closePath();
-    
-    // T-shirt gradient fill
-    const gradient = ctx.createLinearGradient(
-      centerX - 70, centerY, centerX + 70, centerY
-    );
-    gradient.addColorStop(0, '#e6e6e6');
-    gradient.addColorStop(0.5, '#ffffff');
-    gradient.addColorStop(1, '#e6e6e6');
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    
-    ctx.strokeStyle = '#999';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    // Draw collar
-    ctx.beginPath();
-    ctx.ellipse(centerX, centerY - 75, 20, 10, 0, 0, Math.PI * 2);
-    ctx.strokeStyle = '#999';
-    ctx.stroke();
-    
-    // Draw shoulders
-    ctx.beginPath();
-    ctx.moveTo(centerX - 50, centerY - 70);
-    ctx.lineTo(centerX - 80, centerY - 60);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo(centerX + 50, centerY - 70);
-    ctx.lineTo(centerX + 80, centerY - 60);
-    ctx.stroke();
-    
-    // Draw image on shirt if provided
-    if (previewImage) {
-      const img = new Image();
-      img.onload = () => {
-        // Calculate dimensions to maintain aspect ratio
-        const maxWidth = 80;
-        const maxHeight = 80;
-        const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
-        const width = img.width * ratio;
-        const height = img.height * ratio;
-        
-        // Draw the image centered on the shirt
-        ctx.drawImage(
-          img, 
-          centerX - width / 2, 
-          centerY - height / 2 + 10, 
-          width, 
-          height
-        );
-      };
-      img.src = previewImage;
-    }
-    
-    // Draw text on shirt
-    if (formData.text) {
-      ctx.fillStyle = '#000';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'center';
-      
-      const lines = formData.text.split('\n').slice(0, 3);
-      lines.forEach((line, index) => {
-        ctx.fillText(
-          line, 
-          centerX, 
-          centerY + 40 + (index * 16)
-        );
-      });
-    }
-    
-    // Add size label
-    const size = getSizeRecommendation(formData.height, formData.weight, formData.build);
-    ctx.fillStyle = '#000';
-    ctx.font = '14px Arial';
-    ctx.fillText(`Size: ${size}`, centerX, centerY + 95);
-    
-  }, [formData, previewImage]);
-
   return (
-    <div className={className}>
-      <canvas 
-        ref={canvasRef} 
-        width={400} 
-        height={400} 
-        className="w-full h-full border rounded-lg bg-white shadow-md animate-rotate-shirt"
-      ></canvas>
-      <div className="mt-4 text-center text-sm text-gray-500">
-        <p>3D Preview Mode (Press Alt+Q to switch back)</p>
-        <p className="mt-2">This is a simplified 3D preview. In a production app, this would use Three.js for a fully interactive 3D model.</p>
+    <div className={`w-full h-[500px] ${className}`}>
+      <Canvas shadows camera={{ position: [0, 0, 5], fov: 50 }}>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={1} castShadow />
+        <TShirtModel formData={formData} previewImage={previewImage} />
+        <OrbitControls enableZoom={true} enablePan={true} />
+      </Canvas>
+      <div className="mt-4 text-center text-sm">
+        <p className="font-medium">Interact with the 3D model:</p>
+        <ul className="text-gray-500 mt-1">
+          <li>• Click and drag to rotate</li>
+          <li>• Scroll to zoom</li>
+          <li>• Press Alt+Q to switch back</li>
+        </ul>
+        <p className="mt-2 text-xs text-gray-400">Size: {getSizeRecommendation(formData.height, formData.weight, formData.build)}</p>
       </div>
     </div>
   );
