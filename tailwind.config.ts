@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,28 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        theme1: {
+          primary: '#6366f1',
+          secondary: '#8b5cf6',
+          accent: '#d946ef',
+          background: '#f8fafc',
+          text: '#1e293b'
+        },
+        theme2: {
+          primary: '#0ea5e9',
+          secondary: '#38bdf8',
+          accent: '#22d3ee',
+          background: '#f0f9ff',
+          text: '#0f172a'
+        },
+        theme3: {
+          primary: '#f43f5e',
+          secondary: '#fb7185',
+          accent: '#fda4af',
+          background: '#fff1f2',
+          text: '#1e1b4b'
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -70,25 +92,32 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
-				}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' }
+        },
+        'fade-out': {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' }
+        },
+        'rotate-shirt': {
+          '0%': { transform: 'rotateY(0deg)' },
+          '100%': { transform: 'rotateY(360deg)' }
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.3s ease-out',
+        'fade-out': 'fade-out 0.3s ease-out',
+        'rotate-shirt': 'rotate-shirt 3s ease-in-out'
 			}
 		}
 	},
