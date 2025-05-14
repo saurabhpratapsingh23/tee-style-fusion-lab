@@ -1,22 +1,16 @@
-# Welcome to your Lovable project
+# Tee Style Fusion Lab
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/64d82cc5-08a2-49ab-b5f7-f481a1f3b3ca
+This is a custom t-shirt design web application built with Vite, TypeScript, React, shadcn-ui, and Tailwind CSS.
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/64d82cc5-08a2-49ab-b5f7-f481a1f3b3ca) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +56,8 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/64d82cc5-08a2-49ab-b5f7-f481a1f3b3ca) and click on Share -> Publish.
+You can deploy this project using your preferred static hosting provider (e.g. Vercel, Netlify, GitHub Pages, etc.).
 
-## Can I connect a custom domain to my Lovable project?
+## Can I connect a custom domain?
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Yes, you can! Follow your hosting provider's instructions to connect a custom domain. 

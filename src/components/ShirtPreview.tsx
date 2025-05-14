@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { CustomizationFormValues } from '@/types/customization';
 
@@ -13,14 +13,44 @@ const ShirtPreview: React.FC<ShirtPreviewProps> = ({
   previewImage, 
   className 
 }) => {
+  const [textPosition, setTextPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
   // Split the text into lines (max 3)
   const textLines = formData.text
     .split('\n')
     .slice(0, 3)
     .filter(line => line.trim() !== '');
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - textPosition.x,
+      y: e.clientY - textPosition.y
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging) {
+      setTextPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className={cn('relative flex items-center justify-center', className)}>
+    <div 
+      className={cn('relative flex items-center justify-center', className)}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <div className="relative">
         {/* T-shirt base image */}
         <svg 
@@ -68,11 +98,20 @@ const ShirtPreview: React.FC<ShirtPreviewProps> = ({
 
         {/* Text on shirt */}
         {textLines.length > 0 && (
-          <div className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 text-center w-3/4">
+          <div 
+            className="absolute cursor-move select-none"
+            style={{
+              left: '50%',
+              top: '50%',
+              transform: `translate(${textPosition.x}px, ${textPosition.y}px)`,
+              userSelect: 'none'
+            }}
+            onMouseDown={handleMouseDown}
+          >
             {textLines.map((line, index) => (
               <div 
                 key={index} 
-                className="text-sm md:text-base font-bold my-1"
+                className="text-sm md:text-base font-bold my-1 text-center"
                 style={{ color: formData.textColor || '#000000' }}
               >
                 {line}
